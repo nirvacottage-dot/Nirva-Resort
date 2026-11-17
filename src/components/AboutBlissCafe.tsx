@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import {
   Utensils,
   Music,
@@ -186,13 +187,15 @@ export default function AboutBlissCafe() {
               aria-label="Bliss Cafe dining experience image carousel"
             >
               {/* Actual Photograph filling 100% of the fixed carousel card directly */}
-              <img
+              <Image
                 key={currentBliss.src}
                 src={currentBliss.src}
                 alt={currentBliss.alt}
-                className="w-full h-full object-cover object-center block select-none"
-                loading="eager"
-                decoding="async"
+                fill
+                unoptimized
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover object-center select-none"
+                priority
               />
 
               {/* Subtle bottom gradient only for caption text legibility */}
@@ -292,7 +295,7 @@ export default function AboutBlissCafe() {
                 </ul>
               </div>
               <div className="pt-3 border-t border-[#D8C6A8]/40 text-[10px] text-[#6B5540] flex items-center justify-between">
-                <span>Stay + 1 Meal + Breakfast + Snacks</span>
+                <span>Stay + 1 Meal + Breakfast or Snacks</span>
                 <span className="text-[#C99A4A] font-semibold">Excl. GST</span>
               </div>
             </div>

@@ -11,6 +11,7 @@ import {
   Tag,
   Bath,
   Info,
+  ShieldCheck,
   ChevronLeft,
   ChevronRight,
   Maximize2,
@@ -29,11 +30,16 @@ export default function RoomModal({ room, initialColor = "Blue", onClose }: Room
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [fullscreenView, setFullscreenView] = useState<boolean>(false);
 
-  useEffect(() => {
+  const [prevRoomId, setPrevRoomId] = useState(room?.id);
+  const [prevInitialColor, setPrevInitialColor] = useState(initialColor);
+
+  if (room?.id !== prevRoomId || initialColor !== prevInitialColor) {
+    setPrevRoomId(room?.id);
+    setPrevInitialColor(initialColor);
     setSelectedColor(initialColor || room?.colorVariants?.[0]?.name || "Blue");
     setCurrentImageIndex(0);
     setFullscreenView(false);
-  }, [room, initialColor]);
+  }
 
   const hasVariants = Boolean(room?.colorVariants && room.colorVariants.length > 0);
   const activeVariant = hasVariants
@@ -92,8 +98,12 @@ export default function RoomModal({ room, initialColor = "Blue", onClose }: Room
           onClose();
         }
       }
-      if (e.key === "ArrowRight") handleNext();
-      if (e.key === "ArrowLeft") handlePrev();
+      if (e.key === "ArrowRight") {
+        if (totalImages > 1) setCurrentImageIndex((prev) => (prev + 1) % totalImages);
+      }
+      if (e.key === "ArrowLeft") {
+        if (totalImages > 1) setCurrentImageIndex((prev) => (prev - 1 + totalImages) % totalImages);
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -147,7 +157,17 @@ export default function RoomModal({ room, initialColor = "Blue", onClose }: Room
             {totalImages > 1 && (
               <div className="hidden" aria-hidden="true">
                 {roomImages.map((src) => (
-                  src ? <img key={src} src={src} alt="" loading="eager" decoding="async" /> : null
+                  src ? (
+                    <Image
+                      key={src}
+                      src={src}
+                      alt=""
+                      width={1}
+                      height={1}
+                      unoptimized
+                      priority={false}
+                    />
+                  ) : null
                 ))}
               </div>
             )}
@@ -372,6 +392,15 @@ export default function RoomModal({ room, initialColor = "Blue", onClose }: Room
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Guest Advisory & Policies Note */}
+          <div className="p-3 rounded-xl bg-[#F7F3EA] border border-[#D8C6A8] flex items-start gap-2.5 text-xs text-[#6B5540]">
+            <ShieldCheck className="w-4 h-4 text-[#C99A4A] shrink-0 mt-0.5" />
+            <p className="leading-snug text-[11px]">
+              <strong className="text-[#3E2F24] font-semibold">Resort Policy Advisory: </strong>
+              Any damage to room premises or property will be strictly chargeable under resort policies. Guests are requested to safeguard their personal belongings and materials; management is not responsible for any lost or misplaced items.
+            </p>
           </div>
         </div>
 
